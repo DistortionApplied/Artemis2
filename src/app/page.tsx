@@ -28,6 +28,7 @@ export default function ArtemisIIControl() {
   const [showMissionBriefing, setShowMissionBriefing] = useState(true);
 
   // Refs to track which messages have been sent to avoid duplicates
+  const missionStartedMessageSent = useRef(false);
   const launchMessageSent = useRef(false);
   const mecoMessageSent = useRef(false);
   const tliPrepMessageSent = useRef(false);
@@ -46,26 +47,32 @@ export default function ArtemisIIControl() {
         setMissionTime(prev => {
           const newTime = prev + (gameSpeed * deltaTime / 1000); // Convert to seconds
 
+          // Auto-start mission when countdown reaches zero
+          if (!gameStarted && newTime >= 0 && !missionStartedMessageSent.current) {
+            setGameStarted(true);
+            // Send launch message immediately when mission starts
+            addMessage("CAPCOM", "All stations, we have liftoff at 6:35 PM EDT! Godspeed, Artemis II crew.", "info");
+            missionStartedMessageSent.current = true;
+          }
+
           // Handle mission events only when game is started
           if (gameStarted) {
-            if (newTime >= 0 && prev < 0 && !launchMessageSent.current) {
-              addMessage("CAPCOM", "All stations, we have liftoff at 6:35 PM EDT! Godspeed, Artemis II crew.", "info");
-              launchMessageSent.current = true;
-            }
 
-            if (newTime >= 8 && prev < 8 && !mecoMessageSent.current) {
+            // MECO at T+8:02 (482 seconds)
+            if (newTime >= 482 && prev < 482 && !mecoMessageSent.current) {
               addMessage("CDR", "Copy, Houston. Main engines cut off confirmed. We're on orbit.", "crew_report");
               addMessage("CAPCOM", "Copy, Integrity. Congratulations on a beautiful ascent, crew.", "info");
               mecoMessageSent.current = true;
             }
 
-            if (newTime >= 10200 && prev < 10200 && !tliPrepMessageSent.current) {
+            // TLI prep - let's use ~45 minutes after MECO for demo (482 + 2700 = 3182 seconds)
+            if (newTime >= 3182 && prev < 3182 && !tliPrepMessageSent.current) {
               setPendingApproval("tli");
-              addMessage("CAPCOM", "Orion, Houston. TLI prep complete. We are tracking for burn approval at T+25:14.", "info");
+              addMessage("CAPCOM", "Orion, Houston. TLI prep complete. We are tracking for burn approval.", "info");
               tliPrepMessageSent.current = true;
             }
 
-            if (newTime >= 10200 && newTime < 10210 && pendingApproval === "tli" && !tliRequestMessageSent.current) {
+            if (newTime >= 3182 && newTime < 3192 && pendingApproval === "tli" && !tliRequestMessageSent.current) {
               addMessage("CAPCOM", "Orion, Houston. Requesting TLI burn approval. All systems are go.", "approval_request");
               tliRequestMessageSent.current = true;
             }
@@ -99,10 +106,10 @@ export default function ArtemisIIControl() {
   // Mission events are handled in the timer callback to avoid useEffect setState issues
 
   const startMission = useCallback(() => {
-    setGameStarted(true);
     setShowMissionBriefing(false);
     addMessage("SYSTEM", "Artemis II Mission Control online. All stations report ready.", "system");
     addMessage("SYSTEM", "Crew ingress complete. Hatch secured.", "system");
+    addMessage("SYSTEM", "Pre-launch countdown initiated. T-10:00:00 to launch.", "system");
   }, [addMessage]);
 
   const approveBurn = useCallback((eventId: string) => {
@@ -123,6 +130,7 @@ export default function ArtemisIIControl() {
     return <MissionBriefing onStartMission={startMission} />;
   }
 
+  // Show mission control during countdown and mission
   return (
     <MissionControl
       missionTime={missionTime}

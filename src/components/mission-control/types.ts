@@ -116,111 +116,115 @@ export function formatMET(seconds: number): string {
 export function interpolateTelemetry(missionTimeSeconds: number): Telemetry {
   const t = Math.max(0, missionTimeSeconds);
 
-  if (t < 8) {
-    const progress = t / 8;
+  if (t < 482) {
+    // Launch to MECO (8 minutes 2 seconds = 482 seconds)
+    const progress = t / 482;
     return {
       ...INITIAL_TELEMETRY,
       time: formatTime(new Date(MISSION_START_DATE.getTime() + t * 1000)),
       missionElapsedTime: formatMET(t),
-      altitude: progress * 100,
-      velocity: progress * 28000,
+      altitude: progress * 2000,  // Reach ~2000km by MECO
+      velocity: progress * 7800,  // Reach orbital velocity (~7.8 km/s)
       gForce: 4 * Math.sin(progress * Math.PI),
-      pitch: progress * 2,  // Slight pitch during launch
+      pitch: progress * 2,
       yaw: 0,
       roll: 0,
-      mainEngineFuel: INITIAL_TELEMETRY.mainEngineFuel - (progress * 2000), // Burning fuel
-      avionicsTemp: INITIAL_TELEMETRY.avionicsTemp + (progress * 10), // Heating up
-      exteriorTemp: INITIAL_TELEMETRY.exteriorTemp + (progress * 200), // Aerodynamic heating
-      downlinkRate: progress * 50, // Building signal
-      uplinkRate: progress * 10,
+      mainEngineFuel: INITIAL_TELEMETRY.mainEngineFuel - (progress * 200000), // Burning ~200 tons of fuel
+      avionicsTemp: INITIAL_TELEMETRY.avionicsTemp + (progress * 20),
+      exteriorTemp: INITIAL_TELEMETRY.exteriorTemp + (progress * 500), // Aerodynamic heating
+      downlinkRate: 50 + progress * 200,
+      uplinkRate: 10 + progress * 40,
       signalQuality: progress * 100,
-      solarCurrent: progress * 2
+      solarCurrent: progress * 5
     };
   }
 
-  if (t < 60) {
-    const progress = (t - 8) / 52;
+  if (t < 600) {
+    // Post-MECO coast to ICPS ignition (brief period ~2 minutes)
+    const progress = (t - 482) / 118;
     return {
       ...INITIAL_TELEMETRY,
       time: formatTime(new Date(MISSION_START_DATE.getTime() + t * 1000)),
       missionElapsedTime: formatMET(t),
-      altitude: 100 + progress * 400,
-      velocity: 28000 - progress * 5000,
-      gForce: 4 * Math.max(0, 1 - progress * 2),
-      pitch: 2 + progress * 1,  // Adjusting attitude
-      yaw: progress * 0.5,
+      altitude: 2000 + progress * 500,  // Coast in low orbit
+      velocity: 7800,  // Orbital velocity maintained
+      gForce: 0,
+      pitch: 2,
+      yaw: progress * 10,
       roll: 0,
-      mainEngineFuel: INITIAL_TELEMETRY.mainEngineFuel - 2000 - (progress * 3000),
-      rcsFuel: INITIAL_TELEMETRY.rcsFuel - (progress * 50),
-      avionicsTemp: INITIAL_TELEMETRY.avionicsTemp + 10 + (progress * 5),
-      exteriorTemp: INITIAL_TELEMETRY.exteriorTemp + 200 + (progress * 100),
-      downlinkRate: 50 + progress * 100,
-      uplinkRate: 10 + progress * 20,
-      signalQuality: 100 - progress * 10, // Some degradation during ascent
-      solarCurrent: 2 + progress * 3
+      mainEngineFuel: INITIAL_TELEMETRY.mainEngineFuel - 200000,
+      avionicsTemp: INITIAL_TELEMETRY.avionicsTemp + 20 + (progress * 5),
+      exteriorTemp: INITIAL_TELEMETRY.exteriorTemp + 500 - (progress * 200), // Cooling in space
+      downlinkRate: 250 + progress * 50,
+      uplinkRate: 50 + progress * 10,
+      signalQuality: 100 - progress * 20,
+      solarCurrent: 5 + Math.sin(progress * Math.PI * 4) * 2
     };
   }
 
   if (t < 2940) {
-    const progress = (t - 60) / 2880;
-    const orbitAltitude = 500 + progress * 1700;
-    const orbitVelocity = 23000 - progress * 3000;
+    // ICPS burns and high Earth orbit operations (~45 minutes from MECO)
+    const progress = (t - 600) / 2340;
+    const orbitAltitude = 2000 + progress * 60000; // Reaching high Earth orbit
+    const orbitVelocity = 7800 + progress * 1200;  // Increasing velocity for higher orbit
     return {
       ...INITIAL_TELEMETRY,
       time: formatTime(new Date(MISSION_START_DATE.getTime() + t * 1000)),
       missionElapsedTime: formatMET(t),
       altitude: orbitAltitude,
       velocity: orbitVelocity,
-      distanceFromEarth: 2250 + progress * 6750,
-      gForce: 0,
+      distanceFromEarth: 6371 + orbitAltitude, // Earth radius + altitude
+      gForce: progress < 0.1 ? 0.5 : 0, // Brief burns
       pitch: 0,
       yaw: progress * 360,  // Orbital rotation
       roll: 0,
-      mainEngineFuel: INITIAL_TELEMETRY.mainEngineFuel - 5000,
-      rcsFuel: INITIAL_TELEMETRY.rcsFuel - 50 - (progress * 100),
-      avionicsTemp: INITIAL_TELEMETRY.avionicsTemp + 5,
-      exteriorTemp: -100 + progress * 50, // Varying with orbital position
+      mainEngineFuel: INITIAL_TELEMETRY.mainEngineFuel - 200000 - (progress * 50000),
+      rcsFuel: INITIAL_TELEMETRY.rcsFuel - 150 - (progress * 200),
+      oxidizerLevel: 100 - progress * 30,
+      avionicsTemp: INITIAL_TELEMETRY.avionicsTemp + 15,
+      exteriorTemp: -150 + progress * 50,
       orbitalInclination: 28.5,
-      eccentricity: 0.001 + progress * 0.0005,
-      apoapsis: orbitAltitude + 50,
-      periapsis: orbitAltitude - 50,
-      downlinkRate: 150 + progress * 50,
-      uplinkRate: 30 + progress * 10,
-      signalQuality: 95 + progress * 4,
-      solarCurrent: 5 + Math.sin(progress * Math.PI * 2) * 2, // Varying with orbital position
-      batteryChargeRate: Math.sin(progress * Math.PI * 2) > 0 ? 2 : -1
+      eccentricity: 0.001 + progress * 0.1, // Becoming more eccentric
+      apoapsis: orbitAltitude + 1000,
+      periapsis: 2000,
+      downlinkRate: 300 + progress * 200,
+      uplinkRate: 60 + progress * 40,
+      signalQuality: 90 + progress * 9,
+      solarCurrent: 8 + Math.sin(progress * Math.PI * 2) * 3,
+      batteryChargeRate: 1.5 + Math.sin(progress * Math.PI * 2) * 0.5
     };
   }
 
-  if (t < 10200) {
-    const progress = (t - 2940) / 7260;
+  if (t < 40000) {
+    // Translunar injection and transit to lunar sphere of influence (~11 hours from TLI)
+    const progress = (t - 2940) / 37060;
     return {
       ...INITIAL_TELEMETRY,
       time: formatTime(new Date(MISSION_START_DATE.getTime() + t * 1000)),
       missionElapsedTime: formatMET(t),
-      altitude: 2200,
-      velocity: 20000,
-      distanceFromEarth: 9000 + progress * 320000,
-      distanceFromMoon: 384400 - progress * 230000,
-      fuelPercent: 100 - progress * 15,
-      gForce: 0,
+      altitude: 65000 + progress * 320000,  // Translunar trajectory
+      velocity: 9000 + progress * 1000,     // Increasing velocity
+      distanceFromEarth: 65000 + progress * 320000,
+      distanceFromMoon: 384400 - (65000 + progress * 320000),
+      fuelPercent: 85 - progress * 10,
+      gForce: progress < 0.05 ? 0.3 : 0,   // Brief TLI burn
       pitch: 0,
-      yaw: progress * 180,  // Attitude control during transit
+      yaw: progress * 180,
       roll: progress * 90,
-      mainEngineFuel: INITIAL_TELEMETRY.mainEngineFuel - 5000 - (progress * 5000),
-      rcsFuel: INITIAL_TELEMETRY.rcsFuel - 150 - (progress * 200),
-      oxidizerLevel: 100 - progress * 20,
-      avionicsTemp: INITIAL_TELEMETRY.avionicsTemp + 2,
-      exteriorTemp: -250 + progress * 100, // Warming as approaching Moon
+      mainEngineFuel: INITIAL_TELEMETRY.mainEngineFuel - 250000 - (progress * 10000),
+      rcsFuel: INITIAL_TELEMETRY.rcsFuel - 550 - (progress * 300),
+      oxidizerLevel: 70 - progress * 15,
+      avionicsTemp: INITIAL_TELEMETRY.avionicsTemp + 3,
+      exteriorTemp: -200 + progress * 50,
       orbitalInclination: 28.5,
-      eccentricity: 0.985,  // Highly eccentric translunar trajectory
-      apoapsis: 384400,     // Lunar distance
-      periapsis: 2200,      // Earth perigee
-      downlinkRate: 100 + progress * 200,  // Improving as distance increases
-      uplinkRate: 25 + progress * 50,
-      signalQuality: 80 - progress * 30,  // Degrading with distance
-      solarCurrent: 8 + Math.sin(progress * Math.PI * 4) * 3,
-      batteryChargeRate: 1.5
+      eccentricity: 0.97,   // Translunar trajectory
+      apoapsis: 384400,
+      periapsis: 65000,
+      downlinkRate: 200 + progress * 300,
+      uplinkRate: 50 + progress * 100,
+      signalQuality: 70 - progress * 40,
+      solarCurrent: 12 + Math.sin(progress * Math.PI * 8) * 4,
+      batteryChargeRate: 1.8
     };
   }
 
