@@ -7,6 +7,7 @@ import { MissionTimeline } from "./MissionTimeline";
 import { CommunicationsLog } from "./CommunicationsLog";
 import { CrewStatus } from "./CrewStatus";
 import { OrbitalView } from "./OrbitalView";
+import { ApolloComparison } from "./ApolloComparison";
 
 interface MissionControlProps {
   missionTime: number;
@@ -93,13 +94,14 @@ export function MissionControl({
           />
         </div>
 
-        {/* Right Panel - Communications & Crew/Orbital */}
+        {/* Right Panel - Communications, Crew/Orbital & Apollo Comparison */}
         <div className="flex flex-col gap-1">
           <CommunicationsLog commLog={commLog} />
           <div className="flex gap-1 flex-1">
             <CrewStatus />
             <OrbitalView telemetry={telemetry} />
           </div>
+          <ApolloComparison />
         </div>
       </div>
 

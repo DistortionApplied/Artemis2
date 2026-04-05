@@ -61,20 +61,55 @@ export function TelemetryPanel({ telemetry }: TelemetryPanelProps) {
         </div>
       </div>
 
-      {/* Environment */}
+      {/* Attitude */}
+      <div className="space-y-1 text-xs mb-3 border-t border-neutral-700 pt-2">
+        <div className="text-center text-neutral-400 text-xs mb-1">ATTITUDE</div>
+        <div className="flex justify-between">
+          <span className="text-neutral-400">PITCH:</span>
+          <span className="font-mono text-cyan-300">{telemetry.pitch.toFixed(1)}°</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-neutral-400">YAW:</span>
+          <span className="font-mono text-cyan-300">{telemetry.yaw.toFixed(1)}°</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-neutral-400">ROLL:</span>
+          <span className="font-mono text-cyan-300">{telemetry.roll.toFixed(1)}°</span>
+        </div>
+      </div>
+
+      {/* Thermal */}
+      <div className="space-y-1 text-xs mb-3 border-t border-neutral-700 pt-2">
+        <div className="text-center text-neutral-400 text-xs mb-1">THERMAL</div>
+        <div className="flex justify-between">
+          <span className="text-neutral-400">AVIONICS:</span>
+          <span className="font-mono text-cyan-300">{telemetry.avionicsTemp.toFixed(0)}°F</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-neutral-400">BATTERY:</span>
+          <span className="font-mono text-cyan-300">{telemetry.batteryTemp.toFixed(0)}°F</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-neutral-400">EXTERIOR:</span>
+          <span className="font-mono text-cyan-300">{telemetry.exteriorTemp.toFixed(0)}°F</span>
+        </div>
+      </div>
+
+      {/* Communications Details */}
       <div className="space-y-1 text-xs border-t border-neutral-700 pt-2">
+        <div className="text-center text-neutral-400 text-xs mb-1">COMM DETAILS</div>
         <div className="flex justify-between">
-          <span className="text-neutral-400">TEMP:</span>
-          <span className="font-mono text-cyan-300">{telemetry.cabinTemp.toFixed(0)}°F</span>
+          <span className="text-neutral-400">DOWN:</span>
+          <span className="font-mono text-cyan-300">{telemetry.downlinkRate.toFixed(0)}Mbps</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-neutral-400">CO2:</span>
-          <span className="font-mono text-cyan-300">{telemetry.co2Level.toFixed(2)}%</span>
+          <span className="text-neutral-400">UP:</span>
+          <span className="font-mono text-cyan-300">{telemetry.uplinkRate.toFixed(0)}Mbps</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-neutral-400">COMM:</span>
-          <span className={`font-mono ${telemetry.commSignalStrength < 50 ? "text-amber-400" : "text-green-400"}`}>
-            {telemetry.commSignalStrength.toFixed(0)}%
+          <span className="text-neutral-400">QUALITY:</span>
+          <span className={`font-mono ${telemetry.signalQuality < 50 ? "text-amber-400" : "text-green-400"}`}>
+            {telemetry.signalQuality.toFixed(0)}%
           </span>
         </div>
       </div>

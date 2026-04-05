@@ -16,6 +16,37 @@ export interface Telemetry {
   solarArrayStatus: "deployed" | "deploying" | "error";
   commSignalStrength: number;
   gForce: number;
+
+  // Enhanced telemetry parameters
+  // Attitude & Orientation
+  pitch: number;        // degrees
+  yaw: number;         // degrees
+  roll: number;        // degrees
+
+  // Propellant Systems
+  mainEngineFuel: number;  // kg
+  rcsFuel: number;         // kg
+  oxidizerLevel: number;   // percent
+
+  // Thermal Systems
+  avionicsTemp: number;    // °F
+  batteryTemp: number;     // °F
+  exteriorTemp: number;    // °F
+
+  // Orbital Parameters
+  orbitalInclination: number;  // degrees
+  eccentricity: number;        // dimensionless
+  apoapsis: number;           // km
+  periapsis: number;          // km
+
+  // Communication Details
+  downlinkRate: number;      // Mbps
+  uplinkRate: number;        // Mbps
+  signalQuality: number;     // percent
+
+  // Power Systems
+  solarCurrent: number;      // Amperes
+  batteryChargeRate: number; // Ah
 }
 
 export interface MissionEvent {
@@ -93,7 +124,17 @@ export function interpolateTelemetry(missionTimeSeconds: number): Telemetry {
       missionElapsedTime: formatMET(t),
       altitude: progress * 100,
       velocity: progress * 28000,
-      gForce: 4 * Math.sin(progress * Math.PI)
+      gForce: 4 * Math.sin(progress * Math.PI),
+      pitch: progress * 2,  // Slight pitch during launch
+      yaw: 0,
+      roll: 0,
+      mainEngineFuel: INITIAL_TELEMETRY.mainEngineFuel - (progress * 2000), // Burning fuel
+      avionicsTemp: INITIAL_TELEMETRY.avionicsTemp + (progress * 10), // Heating up
+      exteriorTemp: INITIAL_TELEMETRY.exteriorTemp + (progress * 200), // Aerodynamic heating
+      downlinkRate: progress * 50, // Building signal
+      uplinkRate: progress * 10,
+      signalQuality: progress * 100,
+      solarCurrent: progress * 2
     };
   }
 
@@ -105,7 +146,18 @@ export function interpolateTelemetry(missionTimeSeconds: number): Telemetry {
       missionElapsedTime: formatMET(t),
       altitude: 100 + progress * 400,
       velocity: 28000 - progress * 5000,
-      gForce: 4 * Math.max(0, 1 - progress * 2)
+      gForce: 4 * Math.max(0, 1 - progress * 2),
+      pitch: 2 + progress * 1,  // Adjusting attitude
+      yaw: progress * 0.5,
+      roll: 0,
+      mainEngineFuel: INITIAL_TELEMETRY.mainEngineFuel - 2000 - (progress * 3000),
+      rcsFuel: INITIAL_TELEMETRY.rcsFuel - (progress * 50),
+      avionicsTemp: INITIAL_TELEMETRY.avionicsTemp + 10 + (progress * 5),
+      exteriorTemp: INITIAL_TELEMETRY.exteriorTemp + 200 + (progress * 100),
+      downlinkRate: 50 + progress * 100,
+      uplinkRate: 10 + progress * 20,
+      signalQuality: 100 - progress * 10, // Some degradation during ascent
+      solarCurrent: 2 + progress * 3
     };
   }
 
@@ -120,7 +172,23 @@ export function interpolateTelemetry(missionTimeSeconds: number): Telemetry {
       altitude: orbitAltitude,
       velocity: orbitVelocity,
       distanceFromEarth: 2250 + progress * 6750,
-      gForce: 0
+      gForce: 0,
+      pitch: 0,
+      yaw: progress * 360,  // Orbital rotation
+      roll: 0,
+      mainEngineFuel: INITIAL_TELEMETRY.mainEngineFuel - 5000,
+      rcsFuel: INITIAL_TELEMETRY.rcsFuel - 50 - (progress * 100),
+      avionicsTemp: INITIAL_TELEMETRY.avionicsTemp + 5,
+      exteriorTemp: -100 + progress * 50, // Varying with orbital position
+      orbitalInclination: 28.5,
+      eccentricity: 0.001 + progress * 0.0005,
+      apoapsis: orbitAltitude + 50,
+      periapsis: orbitAltitude - 50,
+      downlinkRate: 150 + progress * 50,
+      uplinkRate: 30 + progress * 10,
+      signalQuality: 95 + progress * 4,
+      solarCurrent: 5 + Math.sin(progress * Math.PI * 2) * 2, // Varying with orbital position
+      batteryChargeRate: Math.sin(progress * Math.PI * 2) > 0 ? 2 : -1
     };
   }
 
@@ -135,7 +203,24 @@ export function interpolateTelemetry(missionTimeSeconds: number): Telemetry {
       distanceFromEarth: 9000 + progress * 320000,
       distanceFromMoon: 384400 - progress * 230000,
       fuelPercent: 100 - progress * 15,
-      gForce: 0
+      gForce: 0,
+      pitch: 0,
+      yaw: progress * 180,  // Attitude control during transit
+      roll: progress * 90,
+      mainEngineFuel: INITIAL_TELEMETRY.mainEngineFuel - 5000 - (progress * 5000),
+      rcsFuel: INITIAL_TELEMETRY.rcsFuel - 150 - (progress * 200),
+      oxidizerLevel: 100 - progress * 20,
+      avionicsTemp: INITIAL_TELEMETRY.avionicsTemp + 2,
+      exteriorTemp: -250 + progress * 100, // Warming as approaching Moon
+      orbitalInclination: 28.5,
+      eccentricity: 0.985,  // Highly eccentric translunar trajectory
+      apoapsis: 384400,     // Lunar distance
+      periapsis: 2200,      // Earth perigee
+      downlinkRate: 100 + progress * 200,  // Improving as distance increases
+      uplinkRate: 25 + progress * 50,
+      signalQuality: 80 - progress * 30,  // Degrading with distance
+      solarCurrent: 8 + Math.sin(progress * Math.PI * 4) * 3,
+      batteryChargeRate: 1.5
     };
   }
 
@@ -150,7 +235,22 @@ export function interpolateTelemetry(missionTimeSeconds: number): Telemetry {
       distanceFromEarth: 320000 + progress * 20000,
       distanceFromMoon: 154400 - progress * 10000,
       fuelPercent: 85 - progress * 10,
-      gForce: 0
+      gForce: 0,
+      pitch: progress * 10,   // Small attitude adjustments
+      yaw: progress * 45,
+      roll: progress * 20,
+      mainEngineFuel: INITIAL_TELEMETRY.mainEngineFuel - 10000,
+      rcsFuel: INITIAL_TELEMETRY.rcsFuel - 350 - (progress * 100),
+      oxidizerLevel: 80 - progress * 15,
+      avionicsTemp: INITIAL_TELEMETRY.avionicsTemp + 1,
+      exteriorTemp: -150 + progress * 50,
+      orbitalInclination: 0,  // Free return trajectory
+      eccentricity: 0.966,    // Lunar trajectory
+      downlinkRate: 300 - progress * 100,  // Degrading as round Moon
+      uplinkRate: 75 - progress * 25,
+      signalQuality: 50 - progress * 40,   // Lunar occultation effects
+      solarCurrent: 10 + Math.sin(progress * Math.PI * 8) * 4,
+      batteryChargeRate: 1.2
     };
   }
 
@@ -259,7 +359,27 @@ const INITIAL_TELEMETRY: Telemetry = {
   batteryLevel: 100,
   solarArrayStatus: "deployed",
   commSignalStrength: 100,
-  gForce: 0
+  gForce: 0,
+
+  // Enhanced telemetry parameters
+  pitch: 0,
+  yaw: 0,
+  roll: 0,
+  mainEngineFuel: 25000,  // kg
+  rcsFuel: 860,           // kg
+  oxidizerLevel: 100,     // percent
+  avionicsTemp: 68,       // °F
+  batteryTemp: 72,        // °F
+  exteriorTemp: -250,     // °F
+  orbitalInclination: 28.5,  // degrees
+  eccentricity: 0.0001,      // dimensionless
+  apoapsis: 0,            // km
+  periapsis: 0,           // km
+  downlinkRate: 0,        // Mbps
+  uplinkRate: 0,          // Mbps
+  signalQuality: 0,       // percent
+  solarCurrent: 0,        // Amperes
+  batteryChargeRate: 0    // Ah
 };
 
 export function getMissionPhase(t: number): MissionPhase {

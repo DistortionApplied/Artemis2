@@ -11,15 +11,6 @@ Build an Artemis 2 Mission Control Console Simulator game. It should be accurate
 🔧 Performance & Technical Issues
 
 
-1. Component Size & Complexity
-
-    - The main component is over 1200 lines - break it into smaller, focused components
-
-2. Timing & Performance
-
-    - The 100ms interval updating multiple states is inefficient - use requestAnimationFrame for smoother updates
-    - Implement proper cleanup to prevent memory leaks
-
 3. 🎮 Gameplay & User Experience
 
     - Player Agency & Interaction
@@ -39,11 +30,6 @@ Build an Artemis 2 Mission Control Console Simulator game. It should be accurate
     - Add mission progress saving/loading
     - Include tutorial mode for new players
 
-5. 📊 Data & Content
-
-    - Mission Accuracy & Depth
-    - Add more detailed telemetry parameters (attitude, propellant levels, thermal data)
-    - Include historical Apollo mission comparisons
     
 6. Content Expansion
 
@@ -54,7 +40,14 @@ Build an Artemis 2 Mission Control Console Simulator game. It should be accurate
 1.0 Initial improvements and revisions
     - refactored page.tsx
     - dealt with refactor fuck ups
-    X clock is fucked
+    - clock seems fixed
+    - addressed errors on launch
+    - addressed comm log messages doubled
+    - push for new agent
     X visually awful
+    X comm messages are mis timed
+        X ECO comes much too quickly
+        X None came through for beginning events after early ECO
     
+
 

@@ -8,3 +8,4 @@ export { MissionTimeline } from "./MissionTimeline";
 export { CommunicationsLog } from "./CommunicationsLog";
 export { CrewStatus } from "./CrewStatus";
 export { OrbitalView } from "./OrbitalView";
+export { ApolloComparison } from "./ApolloComparison";
