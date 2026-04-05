@@ -50,3 +50,11 @@ Build an Artemis 2 Mission Control Console Simulator game. It should be accurate
     - Add mission phases with different challenges and objectives
     - Include educational content about Artemis program and spaceflight
     - Implement mission branching based on player decisions
+
+1.0 Initial improvements and revisions
+    - refactored page.tsx
+    - dealt with refactor fuck ups
+    X clock is fucked
+    X visually awful
+    
+
