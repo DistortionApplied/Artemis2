@@ -67,7 +67,7 @@ export interface CommMessage {
   time: string;
   from: "CAPCOM" | "CDR" | "PLT" | "MS1" | "MS2" | "SYSTEM";
   message: string;
-  type: "info" | "alert" | "approval_request" | "crew_report" | "system";
+  type: "info" | "alert" | "approval_request" | "crew_report" | "system" | "warning";
 }
 
 export interface CrewMember {
@@ -116,9 +116,9 @@ export function formatMET(seconds: number): string {
 export function interpolateTelemetry(missionTimeSeconds: number): Telemetry {
   const t = Math.max(0, missionTimeSeconds);
 
-  if (t < 482) {
-    // Launch to MECO (8 minutes 2 seconds = 482 seconds)
-    const progress = t / 482;
+  if (t < 497) {
+    // Launch to MECO (8 minutes 17 seconds = 497 seconds)
+    const progress = t / 497;
     return {
       ...INITIAL_TELEMETRY,
       time: formatTime(new Date(MISSION_START_DATE.getTime() + t * 1000)),
@@ -441,4 +441,14 @@ export function getPhaseColor(phase: MissionPhase): string {
     splashdown: "bg-green-600"
   };
   return colors[phase];
+}
+
+export function parseMET(met: string): number {
+  // Parse "T+0:56" or "T+1:47:57" to seconds
+  const match = met.match(/T\+(\d+):(\d+)(?::(\d+))?/);
+  if (!match) return 0;
+  const hours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+  const seconds = match[3] ? parseInt(match[3], 10) : 0;
+  return hours * 3600 + minutes * 60 + seconds;
 }

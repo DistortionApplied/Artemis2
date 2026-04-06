@@ -18,27 +18,27 @@ export const MISSION_EVENTS: MissionEvent[] = [
     title: "Maximum Dynamic Pressure",
     description: "Rocket passes through max-Q. Structural loads peak at 56 seconds into flight.",
     type: "milestone",
-    status: "completed",
+    status: "upcoming",
     outcome: "success"
   },
   {
     id: "boost_sep",
-    time: "T+2:09",
-    met: "T+2:09",
+    time: "T+2:03",
+    met: "T+2:03",
     title: "Booster Separation",
     description: "Twin solid rocket boosters separate at 30 miles altitude. Components will land in Atlantic Ocean.",
     type: "milestone",
-    status: "completed",
+    status: "upcoming",
     outcome: "success"
   },
   {
     id: "meco",
-    time: "T+8:02",
-    met: "T+8:02",
+    time: "T+8:17",
+    met: "T+8:17",
     title: "Main Engine Cutoff (MECO)",
     description: "Core stage main engines shut down. Orion and ICPS in initial elliptical orbit.",
     type: "milestone",
-    status: "completed",
+    status: "upcoming",
     outcome: "success"
   },
   {
@@ -48,7 +48,7 @@ export const MISSION_EVENTS: MissionEvent[] = [
     title: "Solar Array Deployment",
     description: "All four Orion solar array wings fully deployed. Spacecraft now self-sustaining.",
     type: "systems",
-    status: "completed",
+    status: "upcoming",
     outcome: "success"
   },
   {
@@ -58,8 +58,7 @@ export const MISSION_EVENTS: MissionEvent[] = [
     title: "Perigee Raise Burn",
     description: "ICPS performs 43-second burn to raise perigee to stable orbit altitude.",
     type: "burn",
-    status: "completed",
-    approved: true,
+    status: "upcoming",
     outcome: "success"
   },
   {
@@ -69,8 +68,7 @@ export const MISSION_EVENTS: MissionEvent[] = [
     title: "Apogee Raise Burn - High Earth Orbit",
     description: "15-minute ICPS burn places Orion in high Earth orbit (70,000 km apogee).",
     type: "burn",
-    status: "completed",
-    approved: true,
+    status: "upcoming",
     outcome: "success"
   },
   {
@@ -80,7 +78,7 @@ export const MISSION_EVENTS: MissionEvent[] = [
     title: "Proximity Operations (Prox Ops)",
     description: "CDR Victor Glover takes manual control of Orion for proximity operations demonstration around ICPS.",
     type: "crew",
-    status: "current",
+    status: "upcoming",
     playerAction: true
   },
   {
@@ -103,38 +101,38 @@ export const MISSION_EVENTS: MissionEvent[] = [
   },
   {
     id: "tli",
-    time: "T+25:14",
-    met: "T+25:14",
+    time: "T+4:10:51",
+    met: "T+4:10:51",
     title: "TRANSLUNAR INJECTION (TLI)",
     description: "European Service Module main engine fires for 5 minutes 51 seconds. Delta-V: 1,272 fps. Commits to free-return trajectory.",
     type: "burn",
-    status: "pending_approval",
+    status: "upcoming",
     playerAction: true
   },
   {
     id: "outbound_tc1",
-    time: "Day 3",
-    met: "T+~48:00",
+    time: "T+48:00",
+    met: "T+48:00",
     title: "Outbound Trajectory Correction 1",
     description: "First of three outbound trajectory correction burns. Jeremy Hansen prepares spacecraft.",
     type: "burn",
-    status: "pending_approval",
+    status: "upcoming",
     playerAction: true
   },
   {
     id: "outbound_tc2",
-    time: "Day 4",
-    met: "T+~72:00",
+    time: "T+72:00",
+    met: "T+72:00",
     title: "Outbound Trajectory Correction 2",
     description: "Second trajectory correction burn to refine lunar approach.",
     type: "burn",
-    status: "pending_approval",
+    status: "upcoming",
     playerAction: true
   },
   {
     id: "suit_demo",
     time: "Day 5",
-    met: "T+~96:00",
+    met: "T+96:00",
     title: "Orion Crew Survival System Suit Demo",
     description: "Crew tests suit pressurization, mobility, eating/drinking while suited.",
     type: "crew",
@@ -142,18 +140,18 @@ export const MISSION_EVENTS: MissionEvent[] = [
   },
   {
     id: "outbound_tc3",
-    time: "Day 5 PM",
-    met: "T+~100:00",
+    time: "T+108:00",
+    met: "T+108:00",
     title: "Outbound Trajectory Correction 3",
     description: "Final outbound trajectory correction before lunar flyby.",
     type: "burn",
-    status: "pending_approval",
+    status: "upcoming",
     playerAction: true
   },
   {
     id: "lunar_flyby",
-    time: "Day 6 - April 6",
-    met: "T+~120:00",
+    time: "Day 6 - April 7",
+    met: "T+142:00",
     title: "LUNAR FLYBY - Closest Approach",
     description: "Orion passes within 4,000-6,000 miles of lunar surface. Crew surpasses Apollo 13 distance record (248,655 miles). Communications blackout ~41 minutes behind Moon.",
     type: "milestone",
@@ -161,18 +159,18 @@ export const MISSION_EVENTS: MissionEvent[] = [
   },
   {
     id: "return_tc1",
-    time: "Day 7",
-    met: "T+~144:00",
+    time: "T+144:00",
+    met: "T+144:00",
     title: "Return Trajectory Correction 1",
     description: "First of three return trajectory correction burns.",
     type: "burn",
-    status: "pending_approval",
+    status: "upcoming",
     playerAction: true
   },
   {
     id: "radiation_shelter",
     time: "Day 8",
-    met: "T+~168:00",
+    met: "T+168:00",
     title: "Radiation Shelter Demonstration",
     description: "Crew tests emergency radiation shelter setup for solar particle events.",
     type: "crew",
@@ -181,7 +179,7 @@ export const MISSION_EVENTS: MissionEvent[] = [
   {
     id: "manual_pilot_demo",
     time: "Day 8",
-    met: "T+~172:00",
+    met: "T+172:00",
     title: "Manual Piloting Demonstration",
     description: "Crew practices manual control modes for future mission proficiency.",
     type: "crew",
@@ -189,18 +187,18 @@ export const MISSION_EVENTS: MissionEvent[] = [
   },
   {
     id: "return_tc2",
-    time: "Day 9",
-    met: "T+~192:00",
+    time: "T+192:00",
+    met: "T+192:00",
     title: "Return Trajectory Correction 2",
     description: "Second return trajectory correction burn.",
     type: "burn",
-    status: "pending_approval",
+    status: "upcoming",
     playerAction: true
   },
   {
     id: "entry_prep",
     time: "Day 10",
-    met: "T+~210:00",
+    met: "T+216:00",
     title: "Entry Preparation",
     description: "Crew restores cabin, reinstalls seats, dons suits for reentry.",
     type: "systems",
@@ -209,7 +207,7 @@ export const MISSION_EVENTS: MissionEvent[] = [
   {
     id: "service_module_sep",
     time: "Day 10",
-    met: "T+~219:00",
+    met: "T+223:00",
     title: "Service Module Separation",
     description: "European Service Module separates. Crew module oriented for reentry.",
     type: "milestone",
@@ -218,7 +216,7 @@ export const MISSION_EVENTS: MissionEvent[] = [
   {
     id: "reentry",
     time: "Day 10",
-    met: "T+~219:20",
+    met: "T+223:20",
     title: "EARTH REENTRY",
     description: "Crew module enters atmosphere at 25,000 mph. Peak heating 3,000°F. Plasma blackout ~4 minutes.",
     type: "milestone",
@@ -227,7 +225,7 @@ export const MISSION_EVENTS: MissionEvent[] = [
   {
     id: "drogue_deploy",
     time: "Day 10",
-    met: "T+~219:35",
+    met: "T+223:35",
     title: "Drogue Parachute Deployment",
     description: "Two 23-foot drogues deploy at 25,000 ft. Slows capsule to 307 mph.",
     type: "milestone",
@@ -236,7 +234,7 @@ export const MISSION_EVENTS: MissionEvent[] = [
   {
     id: "main_deploy",
     time: "Day 10",
-    met: "T+~219:40",
+    met: "T+223:40",
     title: "Main Parachute Deployment",
     description: "Three 116-foot main parachutes deploy at 9,500 ft.",
     type: "milestone",
@@ -244,8 +242,8 @@ export const MISSION_EVENTS: MissionEvent[] = [
   },
   {
     id: "splashdown",
-    time: "Day 10 - April 10",
-    met: "T+~220:00",
+    time: "Day 10 - April 11",
+    met: "T+224:00",
     title: "MISSION SUCCESS - SPLASHDOWN",
     description: "Orion splashes down in Pacific Ocean ~17 mph. Navy recovery team extracts crew.",
     type: "milestone",

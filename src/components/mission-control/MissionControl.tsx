@@ -88,6 +88,7 @@ export function MissionControl({
           <MissionTimeline
             events={events}
             selectedEvent={selectedEvent}
+            missionTime={missionTime}
             onEventSelect={onEventSelect}
             onBurnApprove={onBurnApprove}
             onBurnHold={onBurnHold}

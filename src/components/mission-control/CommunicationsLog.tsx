@@ -18,6 +18,7 @@ export function CommunicationsLog({ commLog }: CommunicationsLogProps) {
           displayMessages.map(msg => (
             <div key={msg.id} className={`p-1 rounded text-xs ${
               msg.type === "alert" ? "bg-red-900/30" :
+              msg.type === "warning" ? "bg-orange-900/30" :
               msg.type === "approval_request" ? "bg-amber-900/30" :
               msg.type === "crew_report" ? "bg-blue-900/30" :
               msg.type === "system" ? "bg-neutral-700/50" :
