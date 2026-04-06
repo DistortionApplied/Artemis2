@@ -2,7 +2,7 @@
 
 ----------------------------------------------------
 prompt
-----------------------------------------------------`
+----------------------------------------------------
 
 We are building an Artemis 2 Mission Control Console Simulator game. It should be accurate to the actual Artemis 2 mission as far as flight path, flight plan and milestones, from prelaunch to splashdown. It should have a professional aesthetic, detailed and accurate telemetry, clear communication to the player what is going on and what the expectations of them are. Clone the repo listed below. Review the game program thoroughly with the goal of understanding the expected behavior of the program and the state of development. Make suggestions, but do not make any edits yet. Make absolutely sure that changes you make do not affect any of the game already built. If you need clarification, ask me for clarification.
 
