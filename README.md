@@ -48,8 +48,12 @@ https://github.com/DistortionApplied/Artemis2.git
     - push for new agent
     - branching "fixit"
     -
-    X launch still completed upon game start
-    X solar array deploying before in space
+    - launch not completed upon game start
+    - solar array deploying in space
+    - mission timeline in line with time
+    X fix launch sequence
+    X first rest never happens
+    X perigee raise comes after TLI
     X I think seconds might be longer than seconds
     X visually awful
     X mission timeline seems inaccurate

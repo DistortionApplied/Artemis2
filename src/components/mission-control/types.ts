@@ -116,9 +116,9 @@ export function formatMET(seconds: number): string {
 export function interpolateTelemetry(missionTimeSeconds: number): Telemetry {
   const t = Math.max(0, missionTimeSeconds);
 
-  if (t < 497) {
-    // Launch to MECO (8 minutes 17 seconds = 497 seconds)
-    const progress = t / 497;
+  if (t < 482) {
+    // Launch to MECO (8 minutes 2 seconds = 482 seconds)
+    const progress = t / 482;
     return {
       ...INITIAL_TELEMETRY,
       time: formatTime(new Date(MISSION_START_DATE.getTime() + t * 1000)),
@@ -139,9 +139,9 @@ export function interpolateTelemetry(missionTimeSeconds: number): Telemetry {
     };
   }
 
-  if (t < 600) {
-    // Post-MECO coast to ICPS ignition (brief period ~2 minutes)
-    const progress = (t - 482) / 118;
+  if (t < 494) {
+    // Post-MECO coast to core stage separation (~12 seconds)
+    const progress = (t - 482) / 12;
     return {
       ...INITIAL_TELEMETRY,
       time: formatTime(new Date(MISSION_START_DATE.getTime() + t * 1000)),
@@ -162,9 +162,9 @@ export function interpolateTelemetry(missionTimeSeconds: number): Telemetry {
     };
   }
 
-  if (t < 2940) {
-    // ICPS burns and high Earth orbit operations (~45 minutes from MECO)
-    const progress = (t - 600) / 2340;
+  if (t < 86400) {
+    // ICPS burns and high Earth orbit operations (~24 hours from core sep)
+    const progress = (t - 494) / 85906;
     const orbitAltitude = 2000 + progress * 60000; // Reaching high Earth orbit
     const orbitVelocity = 7800 + progress * 1200;  // Increasing velocity for higher orbit
     return {
@@ -444,11 +444,17 @@ export function getPhaseColor(phase: MissionPhase): string {
 }
 
 export function parseMET(met: string): number {
-  // Parse "T+0:56" or "T+1:47:57" to seconds
+  // Parse "T+0:56" (minutes:seconds) or "T+1:47:57" (hours:minutes:seconds) to seconds
   const match = met.match(/T\+(\d+):(\d+)(?::(\d+))?/);
   if (!match) return 0;
-  const hours = parseInt(match[1], 10);
-  const minutes = parseInt(match[2], 10);
-  const seconds = match[3] ? parseInt(match[3], 10) : 0;
-  return hours * 3600 + minutes * 60 + seconds;
+  const first = parseInt(match[1], 10);
+  const second = parseInt(match[2], 10);
+  const third = match[3] ? parseInt(match[3], 10) : 0;
+  if (match[3]) {
+    // Two colons: hours:minutes:seconds
+    return first * 3600 + second * 60 + third;
+  } else {
+    // One colon: minutes:seconds
+    return first * 60 + second;
+  }
 }

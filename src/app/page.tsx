@@ -28,12 +28,25 @@ export default function ArtemisIIControl() {
   const [showMissionBriefing, setShowMissionBriefing] = useState(true);
 
   // Refs to track which messages have been sent to avoid duplicates
+  const glsInitiatedMessageSent = useRef(false);
+  const crewArmRetractedMessageSent = useRef(false);
+  const propellantPressurizedMessageSent = useRef(false);
+  const lasEnabledMessageSent = useRef(false);
+  const apuStartedMessageSent = useRef(false);
+  const coreInternalPowerMessageSent = useRef(false);
+  const glsHandoverMessageSent = useRef(false);
+  const hydrogenBurnoffMessageSent = useRef(false);
+  const rs25IgnitionMessageSent = useRef(false);
   const missionStartedMessageSent = useRef(false);
   const launchMessageSent = useRef(false);
+  const rollPitchMessageSent = useRef(false);
+  const maxSpeedMessageSent = useRef(false);
   const solarDeployMessageSent = useRef(false);
   const maxqMessageSent = useRef(false);
   const boostSepMessageSent = useRef(false);
+  const lasJettisonMessageSent = useRef(false);
   const mecoMessageSent = useRef(false);
+  const coreSepMessageSent = useRef(false);
   const perigeeRaiseMessageSent = useRef(false);
   const apogeeRaiseMessageSent = useRef(false);
   const proxOpsMessageSent = useRef(false);
@@ -64,52 +77,119 @@ export default function ArtemisIIControl() {
       const deltaTime = currentTime - lastTime;
 
       // Update at ~60fps (every ~16.67ms) for smooth animation
-      if (deltaTime >= 16.67) {
-        setMissionTime(prev => {
-          const newTime = prev + (gameSpeed * deltaTime / 1000); // Convert to seconds
+        if (deltaTime >= 16.67) {
+          setMissionTime(prev => {
+            const newTime = prev + (gameSpeed * deltaTime / 1000); // Convert to seconds
 
-          // Auto-start mission when countdown reaches zero
-          if (!gameStarted && newTime >= 0 && !missionStartedMessageSent.current) {
-            setGameStarted(true);
-            // Send launch message immediately when mission starts
-            addMessage("CAPCOM", "All stations, we have liftoff at 6:35 PM EDT! Godspeed, Artemis II crew.", "info");
-            missionStartedMessageSent.current = true;
-          }
+            // Pre-launch countdown messages
+            if (newTime >= -600 && prev < -600 && !glsInitiatedMessageSent.current) {
+              addMessage("SYSTEM", "GLS initiated the terminal count.", "system");
+              glsInitiatedMessageSent.current = true;
+            }
+            if (newTime >= -480 && prev < -480 && !crewArmRetractedMessageSent.current) {
+              addMessage("SYSTEM", "Crew Access Arm retracted from Orion.", "system");
+              crewArmRetractedMessageSent.current = true;
+            }
+            if (newTime >= -360 && prev < -360 && !propellantPressurizedMessageSent.current) {
+              addMessage("SYSTEM", "Propellant tanks pressurized; Orion switched to internal power.", "system");
+              propellantPressurizedMessageSent.current = true;
+            }
+            if (newTime >= -320 && prev < -320 && !lasEnabledMessageSent.current) {
+              addMessage("SYSTEM", "Launch Abort System capability enabled.", "system");
+              lasEnabledMessageSent.current = true;
+            }
+            if (newTime >= -240 && prev < -240 && !apuStartedMessageSent.current) {
+              addMessage("SYSTEM", "Core stage auxiliary power units started.", "system");
+              apuStartedMessageSent.current = true;
+            }
+            if (newTime >= -90 && prev < -90 && !coreInternalPowerMessageSent.current) {
+              addMessage("SYSTEM", "Core stage switched to internal power.", "system");
+              coreInternalPowerMessageSent.current = true;
+            }
+            if (newTime >= -33 && prev < -33 && !glsHandoverMessageSent.current) {
+              addMessage("SYSTEM", "GLS handed over control to rocket's launch sequencer.", "system");
+              glsHandoverMessageSent.current = true;
+            }
+            if (newTime >= -12 && prev < -12 && !hydrogenBurnoffMessageSent.current) {
+              addMessage("SYSTEM", "Hydrogen burn-off igniters initiated.", "system");
+              hydrogenBurnoffMessageSent.current = true;
+            }
+            if (newTime >= -6.36 && prev < -6.36 && !rs25IgnitionMessageSent.current) {
+              addMessage("SYSTEM", "RS-25 engines ignited.", "system");
+              rs25IgnitionMessageSent.current = true;
+            }
+
+            // Auto-start mission when countdown reaches zero
+            if (!gameStarted && newTime >= 0 && !missionStartedMessageSent.current) {
+              setGameStarted(true);
+              // Send launch message immediately when mission starts
+              addMessage("CAPCOM", "All stations, we have liftoff at 6:35 PM EDT! Godspeed, Artemis II crew.", "info");
+              setEvents(prev => prev.map(e => e.id === "launch" ? {...e, status: "completed"} : e));
+              missionStartedMessageSent.current = true;
+            }
 
           // Handle mission events only when game is started
           if (gameStarted) {
 
-            // Solar array deploy at T+0:49
-            if (newTime >= 49 && prev < 49 && !solarDeployMessageSent.current) {
-              addMessage("SYSTEM", "Orion solar arrays fully deployed. Power systems nominal.", "system");
-              setEvents(prev => prev.map(e => e.id === "solar_deploy" ? {...e, status: "completed"} : e));
-              solarDeployMessageSent.current = true;
+            // Roll/pitch maneuver at T+0:07
+            if (newTime >= 7 && prev < 7 && !rollPitchMessageSent.current) {
+              addMessage("SYSTEM", "Roll and pitch maneuver completed. Trajectory aligned.", "system");
+              setEvents(prev => prev.map(e => e.id === "roll_pitch" ? {...e, status: "completed"} : e));
+              rollPitchMessageSent.current = true;
             }
 
-            // Max-Q at T+0:56
-            if (newTime >= 56 && prev < 56 && !maxqMessageSent.current) {
+            // Max speed at T+0:56
+            if (newTime >= 56 && prev < 56 && !maxSpeedMessageSent.current) {
+              addMessage("SYSTEM", "Maximum speed achieved.", "system");
+              setEvents(prev => prev.map(e => e.id === "max_speed" ? {...e, status: "completed"} : e));
+              maxSpeedMessageSent.current = true;
+            }
+
+            // Max-Q at T+1:12 (72 seconds)
+            if (newTime >= 72 && prev < 72 && !maxqMessageSent.current) {
               addMessage("CAPCOM", "Max-Q passed. Structural loads within limits.", "info");
               setEvents(prev => prev.map(e => e.id === "maxq" ? {...e, status: "completed"} : e));
               maxqMessageSent.current = true;
             }
 
-            // Booster sep at T+2:03 (123 seconds)
-            if (newTime >= 123 && prev < 123 && !boostSepMessageSent.current) {
+            // Booster sep at T+2:09 (129 seconds)
+            if (newTime >= 129 && prev < 129 && !boostSepMessageSent.current) {
               addMessage("CAPCOM", "Booster separation confirmed. SRBs heading for Atlantic splashdown.", "info");
               setEvents(prev => prev.map(e => e.id === "boost_sep" ? {...e, status: "completed"} : e));
               boostSepMessageSent.current = true;
             }
 
-            // MECO at T+8:17 (497 seconds)
-            if (newTime >= 497 && prev < 497 && !mecoMessageSent.current) {
+            // LAS jettison at T+3:13 (193 seconds)
+            if (newTime >= 193 && prev < 193 && !lasJettisonMessageSent.current) {
+              addMessage("SYSTEM", "Launch abort system jettisoned.", "system");
+              setEvents(prev => prev.map(e => e.id === "las_jettison" ? {...e, status: "completed"} : e));
+              lasJettisonMessageSent.current = true;
+            }
+
+            // MECO at T+8:02 (482 seconds)
+            if (newTime >= 482 && prev < 482 && !mecoMessageSent.current) {
               addMessage("CDR", "Copy, Houston. Main engines cut off confirmed. We're on orbit.", "crew_report");
               addMessage("CAPCOM", "Copy, Integrity. Congratulations on a beautiful ascent, crew.", "info");
               setEvents(prev => prev.map(e => e.id === "meco" ? {...e, status: "completed"} : e));
               mecoMessageSent.current = true;
             }
 
-            // Perigee raise at T+49:00 (2940 seconds)
-            if (newTime >= 2940 && prev < 2940 && !perigeeRaiseMessageSent.current) {
+            // Core stage sep at T+8:14 (494 seconds)
+            if (newTime >= 494 && prev < 494 && !coreSepMessageSent.current) {
+              addMessage("SYSTEM", "Core stage separation confirmed.", "system");
+              setEvents(prev => prev.map(e => e.id === "core_sep" ? {...e, status: "completed"} : e));
+              coreSepMessageSent.current = true;
+            }
+
+            // Solar array deploy at T+8:20 (500 seconds)
+            if (newTime >= 500 && prev < 500 && !solarDeployMessageSent.current) {
+              addMessage("SYSTEM", "Orion solar arrays fully deployed. Power systems nominal.", "system");
+              setEvents(prev => prev.map(e => e.id === "solar_deploy" ? {...e, status: "completed"} : e));
+              solarDeployMessageSent.current = true;
+            }
+
+            // Perigee raise at T+24:00:00 (86400 seconds)
+            if (newTime >= 86400 && prev < 86400 && !perigeeRaiseMessageSent.current) {
               addMessage("CAPCOM", "Perigee raise burn complete. Establishing stable low Earth orbit.", "info");
               setEvents(prev => prev.map(e => e.id === "perigee_raise" ? {...e, status: "completed"} : e));
               perigeeRaiseMessageSent.current = true;
